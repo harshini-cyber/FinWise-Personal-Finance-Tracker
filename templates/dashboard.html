@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - FinWise</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <header class="dashboard-header">
+
+        <h1>FinWise</h1>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </header>
+
+
+    <main class="dashboard">
+
+        <h2>
+            Welcome, {{ session["user_name"] }} 👋
+        </h2>
+
+        <p>
+            Manage your money and understand your spending.
+        </p>
+
+
+        <!-- SUMMARY CARDS -->
+
+        <section class="summary">
+
+            <div class="summary-card">
+
+                <h3>Total Income</h3>
+
+                <p>
+                    ₹{{ "%.2f"|format(income) }}
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Total Expenses</h3>
+
+                <p>
+                    ₹{{ "%.2f"|format(expenses) }}
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Balance</h3>
+
+                <p>
+                    ₹{{ "%.2f"|format(balance) }}
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT TRANSACTIONS -->
+
+        <section class="transactions-section">
+
+            <h2>Recent Transactions</h2>
+
+            {% if recent_transactions %}
+
+                {% for transaction in recent_transactions %}
+
+                    <div class="transaction-card">
+
+                        <div>
+
+                            <h3>
+                                {{ transaction.category.title() }}
+                            </h3>
+
+                            <p>
+                                {{ transaction.description }}
+                            </p>
+
+                            <small>
+                                {{ transaction.date }}
+                            </small>
+
+                        </div>
+
+                        <div>
+
+                            {% if transaction.type == "income" %}
+
+                                <strong>
+                                    + ₹{{ "%.2f"|format(transaction.amount) }}
+                                </strong>
+
+                            {% else %}
+
+                                <strong>
+                                    - ₹{{ "%.2f"|format(transaction.amount) }}
+                                </strong>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    No transactions added yet.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- MONTHLY BUDGET -->
+
+        <section class="budget-section">
+
+            <h2>Monthly Budget Overview</h2>
+
+            {% if budget_status %}
+
+                {% for budget in budget_status %}
+
+                    <div class="budget-card">
+
+                        <h3>
+                            {{ budget.category.title() }}
+                        </h3>
+
+                        <p>
+                            Budget:
+                            ₹{{ "%.2f"|format(budget.budget) }}
+                        </p>
+
+                        <p>
+                            Spent:
+                            ₹{{ "%.2f"|format(budget.spent) }}
+                        </p>
+
+
+                        {% if budget.remaining >= 0 %}
+
+                            <p>
+                                Remaining:
+                                ₹{{ "%.2f"|format(budget.remaining) }}
+                            </p>
+
+                        {% else %}
+
+                            <p>
+
+                                ⚠️ Budget exceeded by
+
+                                ₹{{ "%.2f"|format(budget.remaining * -1) }}
+
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    No budget has been set yet.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- DASHBOARD ACTIONS -->
+
+        <section class="dashboard-actions">
+
+            <a href="{{ url_for('transaction') }}">
+
+                <button type="button">
+                    Add Transaction
+                </button>
+
+            </a>
+
+
+            <a href="{{ url_for('budget') }}">
+
+                <button type="button">
+                    Set Monthly Budget
+                </button>
+
+            </a>
+
+        </section>
+
+
+        <!-- PERSONALIZED INSIGHT -->
+
+        <section class="insight">
+
+            <h3>💡 FinWise Insight</h3>
+
+            <p>
+                {{ insight }}
+            </p>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
